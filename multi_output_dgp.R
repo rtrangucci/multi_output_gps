@@ -55,16 +55,14 @@ L_inter_corr <- onion(D, .15)
 inter_corr <- L_inter_corr %*% t(L_inter_corr)
 cov_mat <- cov_exp_quad(x, alpha, len_scale, 1e-12)
 L_mat <- t(chol(cov_mat))
-y_tilde <- matrix(rnorm(D * dim_x),D,dim_x)
-gp_draw <- L_mat %*% t(diag(sds) %*% L_inter_corr %*% y_tilde)
+y_tilde <- matrix(rnorm(D * dim_x),dim_x,D)
+gp_draw <- L_mat %*% y_tilde %*% t(diag(sds) %*% L_inter_corr)
 y <- gp_draw + matrix(0.5 * rnorm(D * dim_x), dim_x, D)
 
 df <- data.frame(gp = as.vector(gp_draw),
                  y = as.vector(y),
                  series = as.vector(sapply(1:D,rep,dim_x)),
                  x = rep(x,D))
-
-
 
 ggplot(df, aes(x = x, y = gp, colour = as.factor(series), group = series)) + geom_line() + geom_point(aes(x= x, y = y))
 

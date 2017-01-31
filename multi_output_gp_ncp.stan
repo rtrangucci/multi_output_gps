@@ -11,18 +11,18 @@ parameters {
   vector<lower=0>[D] alphas;
   real<lower=0> sigma;
   cholesky_factor_corr[D] L_Omega;
-  matrix[D, t] y_tilde;
+  matrix[t, D] y_tilde;
 }
 transformed parameters {
   matrix[t, D] latent_gp; 
   {
-    matrix[t, t] intra_cov;
-    matrix[t, t] L_intra_cov;
-    intra_cov = cov_exp_quad(x, 1.0, len_scale);
+    matrix[t, t] K;
+    matrix[t, t] L_K;
+    K = cov_exp_quad(x, 1.0, len_scale);
     for (n in 1:t)
-      intra_cov[n,n] = intra_cov[n,n] + 1e-12;
-    L_intra_cov = cholesky_decompose(intra_cov);
-    latent_gp = L_intra_cov * (diag_pre_multiply(alphas, L_Omega) * y_tilde)';
+      K[n,n] = K[n,n] + 1e-12;
+    L_K = cholesky_decompose(K);
+    latent_gp = L_K * y_tilde * diag_pre_multiply(alphas, L_Omega)';
   }
 }
 model {
