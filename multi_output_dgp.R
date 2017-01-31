@@ -1,6 +1,8 @@
 library(ggplot2)
 library(rstan)
 
+## Generate the cholesky factor of an LKJ
+## correlation matrix
 onion <- function(d, eta){
   shape1 <- rep(NA_real_, d - 1)
   shape2 <- rep(NA_real_, d - 1)
@@ -26,7 +28,7 @@ onion <- function(d, eta){
   return(L)
 }
 
-
+## exponentiated quadratic covariance matrix function
 cov_exp_quad <- function(x, alpha, len_scale, jitter) {
   dim_x = length(x)
   cov_ret <- matrix(NA_real_, dim_x, dim_x)
@@ -41,6 +43,8 @@ cov_exp_quad <- function(x, alpha, len_scale, jitter) {
   cov_ret[dim_x, dim_x] = alpha ^ 2 + jitter
   return(cov_ret)
 }
+
+## DGP
 
 set.seed(320)
 
@@ -64,7 +68,11 @@ df <- data.frame(gp = as.vector(gp_draw),
                  series = as.vector(sapply(1:D,rep,dim_x)),
                  x = rep(x,D))
 
+## Plot the data and the latent means
+
 ggplot(df, aes(x = x, y = gp, colour = as.factor(series), group = series)) + geom_line() + geom_point(aes(x= x, y = y))
+
+## Generate data to pass to Stan model
 
 stan_dat <- list(y = y,
                  N = length(df$y),
