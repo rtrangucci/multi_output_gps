@@ -1,16 +1,18 @@
 data {
-  int<lower=1> N;
-  int<lower=1> t;
-  int<lower=1> D;
-  matrix[t,D] y;
-  int ind[N];
-  real x[t];
+  // Model is for D outcomes that have been
+  // observed at the same x locations 
+  int<lower=1> t; // Number of time periods 
+  int<lower=1> D; // Number of outcomes/outputs
+  matrix[t,D] y; // Outcome
+  real x[t]; // Predictor
 }
 parameters {
-  real<lower=0> len_scale;
-  vector<lower=0>[D] alphas;
-  real<lower=0> sigma;
+  real<lower=0> len_scale; // Common length-scale
+  vector<lower=0>[D] alphas; // Scale of outcomes
+  real<lower=0> sigma; // Scale of noise
+  // Outcome correlation matrix
   cholesky_factor_corr[D] L_Omega;
+  // Standardized latent GP
   matrix[t, D] y_tilde;
 }
 transformed parameters {
@@ -22,6 +24,10 @@ transformed parameters {
     for (n in 1:t)
       K[n,n] = K[n,n] + 1e-12;
     L_K = cholesky_decompose(K);
+
+    // latent_gp is matrix-normal with among-column covariance K
+    // among-row covariance multiply_lower_tri_self(alphas * L_Omega)
+    
     latent_gp = L_K * y_tilde * diag_pre_multiply(alphas, L_Omega)';
   }
 }
