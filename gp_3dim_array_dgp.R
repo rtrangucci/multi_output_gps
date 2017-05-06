@@ -21,10 +21,11 @@ cov_exp_quad <- function(x, alpha, len_scale, jitter) {
 
 set.seed(320)
 
-dim_x_1 <- 100
-dim_x_2 <- 50
-dim_x_3 <- 30
-alpha <- 0.5
+dim_x_1 <- 10
+dim_x_2 <- 5
+dim_x_3 <- 3
+alpha_x_3 <- 0.5
+alpha_x_1_x_2 <- 0.25
 len_scale_x_1 <- 4
 len_scale_x_2 <- 2
 len_scale_x_3 <- 3
@@ -33,8 +34,8 @@ x_1 <- seq(0,20,length.out = dim_x_1)
 x_2 <- seq(0,20,length.out = dim_x_2)
 x_3 <- seq(0,20,length.out = dim_x_3)
 cov_mat_x_1 <- cov_exp_quad(x_1, 1.0, len_scale_x_1, 1e-12)
-cov_mat_x_2 <- cov_exp_quad(x_2, 1.0, len_scale_x_2, 1e-12)
-cov_mat_x_3 <- cov_exp_quad(x_3, alpha, len_scale_x_3, 1e-12)
+cov_mat_x_2 <- cov_exp_quad(x_2, alpha_x_1_x_2, len_scale_x_2, 1e-12)
+cov_mat_x_3 <- cov_exp_quad(x_3, alpha_x_3, len_scale_x_3, 1e-12)
 L_x_1 <- t(chol(cov_mat_x_1))
 L_x_2 <- t(chol(cov_mat_x_2))
 L_x_3 <- t(chol(cov_mat_x_3))
